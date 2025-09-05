@@ -33,3 +33,4 @@ jobs:
 
       - name: 输出执行时间
         run: echo "本次签到完成于: $(date '+%Y-%m-%d %H:%M:%S')"
+    
