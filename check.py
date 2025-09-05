@@ -7,8 +7,8 @@ CHECKIN_URL = f"{BASE_URL}/user/checkin"
 
 # 🟢 多账号账号密码列表
 ACCOUNTS = [
-    ("peige1985@gmail.com", "你的密码1"),
-    ("example2@gmail.com", "你的密码2"),
+    ("peige1985@gmail.com", "你的密码1")，
+    ("example2@gmail.com", "你的密码2")，
     # 继续加 ...
 ]
 
@@ -38,7 +38,7 @@ def login(email, password):
             return session
         else:
             print(f"❌ 登录失败: {email} | {result.get('msg')}")
-            return None
+            return 无
     except Exception:
         print(f"⚠️ 登录异常: {email} | 返回内容: {resp.text[:100]}")
         return None
@@ -70,3 +70,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
