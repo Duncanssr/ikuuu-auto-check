@@ -1,16 +1,14 @@
-name: ikuuu自动签到（多账号+Telegram通知）
+name: ikuuu自动签到（带通知）
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # 每天UTC 0点（北京时间8点）执行
+    - cron: '0 0 * * *'  # 每天UTC 0点（北京时间8点）
   workflow_dispatch:  # 允许手动触发
 
 jobs:
   checkin:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    permissions:
-      actions: write  # 用于后续清理工作流
 
     steps:
       - name: 拉取代码
@@ -25,7 +23,7 @@ jobs:
         run: pip install requests
 
       - name: 运行签到脚本
-        run: python ikuuu_checkin.py
+        run: python ikuuu_checkin.py  # 确保与实际脚本文件名一致
         env:
           ACCOUNTS: ${{ secrets.ACCOUNTS }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
