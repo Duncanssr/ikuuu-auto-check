@@ -1,75 +1,109 @@
-# GitHub Secrets 变量配置完整教程（含表格说明）
-本教程将通过表格清晰展示所有需配置的变量，配合步骤指引，帮助你快速完成敏感信息的安全存储，确保自动签到脚本和清理脚本正常运行。
+👌 明白啦，你是要我基于这个 **ikuuu 自动签到脚本**，写一个完整的 **README 使用教程**。
 
+我帮你整理好一份标准的开源项目说明文档：
 
-## 一、前置准备
-1. 已创建 GitHub 仓库（如 `ikuuu-auto-check`），并上传了自动签到脚本（`ikuuu_checkin.py`）和工作流配置文件。
-2. 准备好以下信息：
-   - ikuuu 账号邮箱+密码（如 `lijboy@outlook.com,qwer1234`）；
-   - Telegram 机器人令牌（可选，用于接收签到通知）；
-   - Telegram 聊天 ID（可选，用于接收签到通知）。
+---
 
+# 📌 ikuuu-auto-check
 
-## 二、需配置的变量总览（表格版）
-| 变量名称（Name）       | 变量用途                  | 填写格式/示例                          | 是否必选 | 注意事项                                  |
-|------------------------|---------------------------|----------------------------------------|----------|-------------------------------------------|
-| `ACCOUNTS`             | 存储 ikuuu 账号密码       | 邮箱1,密码1;邮箱2,密码2;邮箱3,密码3    | 是       | 英文逗号分隔邮箱和密码，英文分号分隔多账号 |
-| `TELEGRAM_BOT_TOKEN`   | Telegram 机器人身份标识   | 123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11 | 否       | 从 `@BotFather` 处获取，格式固定           |
-| `TELEGRAM_CHAT_ID`     | 接收通知的 Telegram 聊天ID | 123456789（纯数字）                    | 否       | 从 `@getidsbot` 处获取，无特殊符号        |
+一个基于 **Python + GitHub Actions** 的自动签到工具，支持多账号，并可通过 Telegram Bot 发送签到结果通知。
 
+---
 
-## 三、Step 1：进入 GitHub Secrets 配置页
-1. 打开你的 GitHub 仓库（示例链接：`https://github.com/Duncanssr/ikuuu-auto-check`）。
-2. 点击仓库顶部导航栏的 **Settings**（设置），进入仓库配置页。
-3. 在左侧菜单栏中，找到并展开 **Secrets and variables**（密钥和变量），点击子选项 **Actions**，进入工作流专用的 Secrets 配置页。  
-   ![进入Secrets页面示意图](https://picsum.photos/id/180/800/400?alt=GitHub仓库设置中Secrets位置)
+## ✨ 功能特性
 
+* [x] 支持多账号签到（用分号 `;` 分隔）
+* [x] 自动登录并签到 ikuuu
+* [x] 支持 Telegram 推送签到结果
+* [x] 可通过 GitHub Actions 定时执行，无需服务器
 
-## 四、Step 2：按表格配置变量（逐个添加）
-所有变量均通过 **“新建密钥”** 功能添加，操作逻辑一致，以下按“必选→可选”顺序说明：
+---
 
-### 1. 配置必选变量：`ACCOUNTS`（ikuuu账号密码）
-1. 在 Secrets 页面，点击右上角 **New repository secret**（新建仓库密钥）。
-2. 按表格要求填写：
-   - **Name**：严格填写 `ACCOUNTS`（区分大小写，错写脚本无法读取）；
-   - **Secret**：按格式填入账号密码，示例（对应你的账号）：  
-     `lijboy@outlook.com,qwer1234;lijboy+cs@outlook.com,qwer1234;MarcelinoLueilwitz@outlook.com,qwer1234`。
-3. 点击页面底部 **Add secret**（添加密钥），完成第一个变量配置。
+## 📦 部署方式
 
+### 1. Fork 本仓库
 
-### 2. 配置可选变量：`TELEGRAM_BOT_TOKEN`（Telegram机器人令牌）
-1. 再次点击 **New repository secret**。
-2. 按表格要求填写：
-   - **Name**：严格填写 `TELEGRAM_BOT_TOKEN`；
-   - **Secret**：粘贴从 `@BotFather` 获取的令牌（示例：`123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`）。
-3. 点击 **Add secret** 保存。
+点击右上角 **Fork**，将本仓库复制到自己的 GitHub 账户下。
 
+---
 
-### 3. 配置可选变量：`TELEGRAM_CHAT_ID`（Telegram聊天ID）
-1. 再次点击 **New repository secret**。
-2. 按表格要求填写：
-   - **Name**：严格填写 `TELEGRAM_CHAT_ID`；
-   - **Secret**：粘贴从 `@getidsbot` 获取的纯数字ID（示例：`123456789`）。
-3. 点击 **Add secret** 保存。
+### 2. 配置 Secrets
 
+进入你 Fork 后的仓库 → **Settings → Secrets and variables → Actions → New repository secret**，添加以下参数：
 
-## 五、Step 3：验证变量配置
-1. 回到 Secrets 列表页，确认已添加的变量与下表一致：
-   | 已添加变量名称         | 状态验证                          |
-   |------------------------|-----------------------------------|
-   | `ACCOUNTS`             | 显示为 `***`（内容隐藏，正常）    |
-   | `TELEGRAM_BOT_TOKEN`   | （若配置）显示为 `***`            |
-   | `TELEGRAM_CHAT_ID`     | （若配置）显示为 `***`            |
-2. 若需修改变量：点击对应变量名称，进入详情页后点击 **Update secret**，重新填写内容并保存。
+| 名称                   | 示例值                                                         | 说明                            |
+| -------------------- | ----------------------------------------------------------- | ----------------------------- |
+| `ACCOUNTS`           | `email1@example.com,password1;email2@example.com,password2` | 多账号用 `;` 分隔，账号密码之间用 `,` 分隔    |
+| `TELEGRAM_BOT_TOKEN` | `123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`                 | （可选）你的 Telegram Bot Token     |
+| `TELEGRAM_CHAT_ID`   | `123456789`                                                 | （可选）你的 Telegram 用户/群组 Chat ID |
 
+📌 如果不配置 Telegram 参数，则只会在 GitHub Actions 日志中显示签到结果。
 
-## 六、常见问题排查（表格版）
-| 问题现象                          | 可能原因                          | 解决方案                                  |
-|-----------------------------------|-----------------------------------|-------------------------------------------|
-| 脚本提示“未配置任何账号”          | `ACCOUNTS` 变量名称错写（如 `accounts`） | 确认变量名严格为 `ACCOUNTS`（区分大小写） |
-| 多账号仅部分签到成功              | `ACCOUNTS` 格式错误（用中文逗号/分号） | 改为英文逗号（`,`）和英文分号（`;`）      |
-| 收不到 Telegram 通知              | 机器人令牌/聊天ID填写错误          | 重新从 `@BotFather`/`@getidsbot` 获取并更新 |
-| 清理脚本报403错误                 | 变量未配置或权限不足              | 无需额外变量，确保清理脚本中包含 `permissions: {actions: write, contents: read}` |
+---
 
+### 3. 启用 GitHub Actions
 
-通过以上步骤，你已完成所有敏感变量的安全配置，脚本将自动读取这些变量运行，无需担心信息泄露。后续添加/修改账号时，只需更新 `ACCOUNTS` 变量即可，无需修改代码。
+1. 进入仓库 → 点击 **Actions**
+2. 找到 `ikuuu_checkin` 工作流
+3. 点击 **Enable workflow**
+
+---
+
+### 4. 设置定时任务（可选）
+
+项目默认可以手动运行，你也可以设置 **自动执行**。
+
+编辑 `.github/workflows/ikuuu_checkin.yml`，添加一个 `schedule` 定时任务，例如每天北京时间早上 8 点运行：
+
+```yaml
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"   # UTC 0点，对应北京时间 8点
+```
+
+---
+
+## ▶️ 手动运行
+
+进入仓库 → Actions → 选择 `ikuuu_checkin` → 点击 **Run workflow** 即可手动触发签到。
+
+---
+
+## 📜 日志查看
+
+签到完成后，可以在 **Actions 日志** 或 Telegram Bot（如果配置了）中查看签到结果。
+
+日志示例：
+
+```
+📅 执行时间: 2025-09-05 08:00:01
+🌐 地址: https://ikuuu.org
+
+📋 账号信息:
+  账号 1: test@example.com
+  密码 1: te****23
+
+🎉 签到结果 🎉
+  账号 1: ✅ 签到成功，获得 123MB 流量
+```
+
+---
+
+## ⚠️ 注意事项
+
+1. 账号密码不要带分号 `;` 或逗号 `,`，否则会解析错误。
+2. 如果频繁失败，可能是因为 **IP 风控** 或 **账号异常**，建议手动登录一次确认。
+3. GitHub Actions 有运行时长限制，请尽量不要配置过多账号。
+
+---
+
+## 🛠️ 技术栈
+
+* Python 3
+* requests
+* GitHub Actions
+
+---
+
+你要不要我帮你顺便写一个 `.github/workflows/ikuuu_checkin.yml`，这样 README 里的步骤就是完整可跑的？
