@@ -23,59 +23,54 @@ if accounts_str:
             print(f"跳过无效的账号项: {item}")
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
     "Referer": f"{BASE_URL}/auth/login",
     "X-Requested-With": "XMLHttpRequest",
+    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
 }
 
-def login(email, password):
-    """登录并返回 session"""
+def checkin(email, password):
+    """执行签到操作"""
     session = requests.Session()
     session.headers.update(HEADERS)
-
-    data = {
-        "email": email,
-        "passwd": password,
-        "code": ""  # 没有验证码时留空
-    }
-
+    
     try:
-        resp = session.post(LOGIN_URL, data=data, timeout=10)
-        result = resp.json()
-        if result.get("ret") == 1:
-            print(f"✅ 登录成功: {email}")
-            return session
+        # 登录
+        login_data = {
+            "email": email,
+            "passwd": password,
+            "remember_me": "on"
+        }
+        
+        login_response = session.post(LOGIN_URL, data=login_data)
+        login_result = login_response.json()
+        
+        if login_result.get("ret") != 1:
+            return f"登录失败: {login_result.get('msg', '未知错误')}"
+        
+        # 签到
+        checkin_response = session.post(CHECKIN_URL)
+        checkin_result = checkin_response.json()
+        
+        if checkin_result.get("ret") == 1:
+            return f"签到成功: {checkin_result.get('msg', '获取流量成功')}"
         else:
-            print(f"❌ 登录失败: {email} | {result.get('msg')}")
-            return 无
-    except Exception:
-        print(f"⚠️ 登录异常: {email} | 返回内容: {resp.text[:100]}")
-        return None
-
-
-def check_in(session, email):
-    """签到"""
-    try:
-        resp = session.post(CHECKIN_URL, timeout=10)
-        result = resp.json()
-        if result.get("ret") == 1:
-            print(f"🎉 签到成功: {email} | {result.get('msg')}")
-        else:
-            print(f"ℹ️ 提示: {email} | {result.get('msg')}")
-    except Exception:
-        print(f"⚠️ 签到异常: {email} | 返回内容: {resp.text[:100]}")
-
-
-def main():
-    print("🎯 ikuuu 多账号自动签到脚本")
-    print(f"📆 时间：{time.strftime('%Y-%m-%d %H:%M:%S')}")
-
-    for email, password in ACCOUNTS:
-        print("\n==============================")
-        session = login(email, password)
-        if session:
-            check_in(session, email)
-
+            return f"签到失败: {checkin_result.get('msg', '未知错误')}"
+            
+    except Exception as e:
+        return f"操作异常: {str(e)}"
+    finally:
+        session.close()
 
 if __name__ == "__main__":
-    main()
+    if not ACCOUNTS:
+        print("未配置任何账号，请检查ACCOUNTS环境变量")
+    else:
+        print(f"开始执行签到，共{len(ACCOUNTS)}个账号")
+        for i, (email, password) in enumerate(ACCOUNTS, 1):
+            print(f"\n处理第{i}个账号: {email}")
+            result = checkin(email, password)
+            print(result)
+            # 每个账号签到间隔3-5秒，避免请求过于频繁
+            time.sleep(3 + i % 2)
+        print("\n所有账号签到处理完毕")
