@@ -25,4 +25,4 @@ jobs:
           pip install requests  # 脚本依赖requests库
 
       - name: 运行签到脚本
-        run: python "ikuuu多账号自动签到脚本（账号密码版）.py"  # 脚本文件名需与实际一致
+        run: python "check.py"  # 脚本文件名需与实际一致
