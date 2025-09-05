@@ -1,6 +1,6 @@
-name: ikuuu自动签到
+name: ikuuu自动签到（多账号+Telegram通知）
 
-于:
+on:
   schedule:
     - cron: '0 0 * * *'  # 每天UTC 0点（北京时间8点）执行
   workflow_dispatch:  # 允许手动触发
@@ -25,7 +25,7 @@ jobs:
         run: pip install requests
 
       - name: 运行签到脚本
-        run: python ikuuu_checkin.py
+        run: python ikuuu_auto_checkin.py
         env:
           ACCOUNTS: ${{ secrets.ACCOUNTS }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
