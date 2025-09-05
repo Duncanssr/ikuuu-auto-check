@@ -1,51 +1,44 @@
-name: 每月全量清理工作流记录
+name: 每月清理工作流记录
 
-# 每月1日 UTC 时间 0 点执行
-on:
+于:
   schedule:
-    - cron: '0 0 1 * *'  # 每月1日自动执行
-  workflow_dispatch:  # 支持手动触发
+    - cron: '0 0 1 * *'  # 每月1日执行
+  workflow_dispatch:
 
 jobs:
-  clean-all-runs:
+  clean-runs:
     runs-on: ubuntu-latest
     permissions:
-      actions: write  # 必须授予删除权限
+      actions: write
 
     steps:
-      - name: 全量清理工作流记录
+      - name: 清理所有工作流记录
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # 获取仓库信息
           REPO="${{ github.repository }}"
           echo "开始清理仓库 $REPO 的所有工作流记录..."
-
-          # 获取所有工作流ID
+          
           WORKFLOW_IDS=$(gh api -X GET /repos/$REPO/actions/workflows | jq -r '.workflows[] | .id')
-
-          # 遍历每个工作流，删除其所有运行记录
+          
           for WORKFLOW_ID in $WORKFLOW_IDS; do
             echo "处理工作流 ID: $WORKFLOW_ID"
-            
-            # 分页获取该工作流的所有运行记录（不分日期）
             PAGE=1
             while true; do
               RUNS=$(gh api -X GET "/repos/$REPO/actions/workflows/$WORKFLOW_ID/runs?page=$PAGE&per_page=100" | jq -r '.workflow_runs[] | .id')
               
               if [ -z "$RUNS" ]; then
-                break  # 该工作流已无记录
+                break
               fi
               
-              # 批量删除所有记录
               for RUN_ID in $RUNS; do
                 echo "删除工作流记录 ID: $RUN_ID"
                 gh api -X DELETE "/repos/$REPO/actions/runs/$RUN_ID"
-                sleep 1  # 控制API请求频率
+                sleep 1
               done
               
               PAGE=$((PAGE + 1))
             done
           done
-
+          
           echo "✅ 所有工作流记录已清理完成"
