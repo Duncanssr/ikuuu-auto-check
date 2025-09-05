@@ -25,14 +25,14 @@ def mask_password(password: str) -> str:
 
 def load_accounts() -> List[Tuple[str, str]]:
     """从环境变量加载多账号信息"""
-    accounts_str = os.getenv("ACCOUNTS"， "")  # 正确的英文逗号
+    accounts_str = os.getenv("ACCOUNTS"， "")
     accounts = []
     if not accounts_str:
         return accounts
         
     for item in accounts_str.split(";"):
-        if item 和 "," 在 item:
-            email, password = item.split(","， 1)
+        if item 和 "," in item:
+            email, password = item.split(",", 1)
             accounts.append((email.strip(), password.strip()))
     return accounts
 
