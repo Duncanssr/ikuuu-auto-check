@@ -25,7 +25,7 @@ def mask_password(password: str) -> str:
 
 def load_accounts() -> List[Tuple[str, str]]:
     """从环境变量加载多账号信息"""
-    accounts_str = os.getenv("ACCOUNTS"， "")  # 修正为英文逗号
+    accounts_str = os.getenv("ACCOUNTS"， "")  # 正确的英文逗号
     accounts = []
     if not accounts_str:
         return accounts
