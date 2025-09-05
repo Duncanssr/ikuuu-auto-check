@@ -25,7 +25,7 @@ jobs:
         run: pip install requests
 
       - name: 运行签到脚本
-        run: python ikuuu_auto_checkin.py
+        run: python ikuuu_checkin.py
         env:
           ACCOUNTS: ${{ secrets.ACCOUNTS }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
