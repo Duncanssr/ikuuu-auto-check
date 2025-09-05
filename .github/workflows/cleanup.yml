@@ -1,0 +1,70 @@
+name: 每月全量清理工作流记录
+
+on:
+  schedule:
+    - cron: '0 0 1 * *'  # 每月1日UTC 0点自动执行
+  workflow_dispatch:      # 支持手动触发
+
+jobs:
+  clean-all-runs:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write      # 必需：删除工作流记录的权限
+      contents: read
+    env:
+      REPO: ${{ github.repository }}
+      CURRENT_RUN_ID: ${{ github.run_id }}
+      GH_PAT: ${{ secrets.GH_PAT }}   # 如果没设置，会是空
+
+    steps:
+      - name: 清理所有工作流记录
+        run: |
+          TOKEN=${GH_PAT:-${{ github.token }}}
+          echo "📦 开始清理仓库 $REPO 的工作流记录（当前任务ID: $CURRENT_RUN_ID）"
+
+          WORKFLOW_IDS=$(curl -s -H "Authorization: Bearer $TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$REPO/actions/workflows" \
+            | jq -r '.workflows[]?.id')
+
+          if [ -z "$WORKFLOW_IDS" ]; then
+            echo "⚠️ 未获取到工作流ID，仓库可能没有工作流"
+            exit 0
+          fi
+
+          for WORKFLOW_ID in $WORKFLOW_IDS; do
+            echo -e "\n=== 🔄 处理工作流 ID: $WORKFLOW_ID ==="
+            PAGE=1
+            while true; do
+              echo -n "📄 获取第 $PAGE 页记录..."
+              RUNS=$(curl -s -H "Authorization: Bearer $TOKEN" \
+                -H "Accept: application/vnd.github+json" \
+                "https://api.github.com/repos/$REPO/actions/workflows/$WORKFLOW_ID/runs?page=$PAGE&per_page=100" \
+                | jq -r --arg CURRENT_ID "$CURRENT_RUN_ID" '.workflow_runs[]? | select(.id != ($CURRENT_ID|tonumber)) | .id')
+
+              if [ -z "$RUNS" ]; then
+                echo " 无更多记录"
+                break
+              fi
+
+              echo " 共找到 $(echo "$RUNS" | wc -l) 条待删除记录"
+              for RUN_ID in $RUNS; do
+                echo -n "🗑️ 删除记录 ID: $RUN_ID ... "
+                STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE \
+                  -H "Authorization: Bearer $TOKEN" \
+                  -H "Accept: application/vnd.github+json" \
+                  "https://api.github.com/repos/$REPO/actions/runs/$RUN_ID")
+
+                if [ "$STATUS" -eq 204 ]; then
+                  echo "✅ 成功"
+                else
+                  echo "❌ 失败 (HTTP $STATUS)"
+                fi
+              done
+
+              PAGE=$((PAGE+1))
+              sleep 1
+            done
+          done
+
+          echo -e "\n🎉 所有可删除的工作流记录已处理完成"
