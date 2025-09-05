@@ -33,7 +33,7 @@ jobs:
       - name: 执行签到
         run: python ikuuu_checkin.py  # 替换为你实际的Python脚本文件名
         env:
-          IKUUU_ACCOUNTS: ${{ secrets.IKUUU_ACCOUNTS }}  # 引用Secrets中的账号
+          IKUUU_ACCOUNTS: ${{ secrets.ACCOUNTS }}  # 引用Secrets中的账号
 
       # 步骤5：输出完成时间（可选，方便日志查看）
       - name: 记录完成时间
