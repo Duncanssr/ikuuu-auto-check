@@ -16,7 +16,7 @@ HEADERS = {
 # 从环境变量获取配置
 ACCOUNTS_STR = os.getenv("ACCOUNTS", "")
 TG_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
-TG_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID"， "")
+TG_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
 
 # 解析账号
 def parse_accounts():
@@ -25,9 +25,9 @@ def parse_accounts():
         print("未配置任何账号")
         return accounts
         
-    for item 在 ACCOUNTS_STR.split(';'):
-        if item 和 ',' 在 item:
-            email, password = item.split(','， 1)
+    for item in ACCOUNTS_STR.split(';'):
+        if item and ',' in item:
+            email, password = item.split(',', 1)
             accounts.append((email.strip(), password.strip()))
     return accounts
 
