@@ -26,3 +26,5 @@ jobs:
 
       - name: 运行签到脚本
         run: python "check.py"  # 脚本文件名需与实际一致
+        env:
+          ACCOUNTS: ${{ secrets.ACCOUNTS }}  # 引用GitHub Secrets
