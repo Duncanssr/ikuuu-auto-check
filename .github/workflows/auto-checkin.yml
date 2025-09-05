@@ -32,7 +32,7 @@ jobs:
 
       # 步骤4：运行签到脚本（注意：脚本文件名要和你仓库中的一致！）
       - name: 执行签到
-        run: python ikuuu_auto_checkin.py  # 替换为你实际的Python脚本文件名
+        run: python ikuuu_checkin.py  # 替换为你实际的Python脚本文件名
         env:
           IKUUU_ACCOUNTS: ${{ secrets.IKUUU_ACCOUNTS }}  # 引用Secrets中的账号
 
